@@ -1,0 +1,37 @@
+body {
+    background-color: beige;
+}
+
+#answer {
+    border:none;
+    border-radius: 0;
+    border-bottom: 4px solid black;
+    background: transparent;
+    width:80px;
+    font-size: 52px;
+    font-family: Georgia, serif;
+}
+
+#answer:focus {
+    outline:none;
+}
+
+#problem h1 {
+    font-size: 52px;
+    margin-bottom: 0px;
+}
+
+#problem p {
+    text-align: center;
+    font-size: 52px;
+    font-family: Georgia, serif;
+    margin-top: 0px;
+}
+
+#problem {
+    display:block;
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform: translateX(-50%) translateY(-50%);
+}
