@@ -8,13 +8,14 @@ app = Flask(__name__)
 
 #create database and user table within
 conn = sqlite3.connect('database.db')
+cursor = conn.cursor()
 print("Opened database successfully")
 
-result = conn.execute("SELECT name from sqlite_master WHERE type='table' AND name='users'")
+result = cursor.execute("SELECT name from sqlite_master WHERE type='table' AND name='users'")
 
 if(int(len(result.fetchall())) == 0):
-	conn.execute('CREATE TABLE users (id INTEGER, name TEXT, health INTEGER)')
-conn.close()
+	cursor.execute('CREATE TABLE users (id INTEGER NOT NULL, name TEXT NOT NULL, health INTEGER NOT NULL, PRIMARY KEY(id))')
+cursor.close()
 
 @app.route("/")
 def home():
