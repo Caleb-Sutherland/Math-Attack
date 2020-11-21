@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
+{% block content %}
 
 <head>
   <meta charset="UTF-8">
@@ -8,14 +8,17 @@
 </head>
 
 <body>
-  <main id="user-container">
-    <h1 id="user-header">Name</h1>
-    
-    <form id="user-form">
-      <input type="text" name="username" id="username-field" class="login-form-field" placeholder="Username">
-      <input type="submit" value="Start" id="submit-name">
-    </form>
-  </main>
+    <div id = "user-container">
+        
+        
+        <form id="user-form">
+            <input id="user-input" type="text" name="username" id="username-field" placeholder="Name">
+            <br>
+            <br>
+            <input id="submit" type="submit" value="Start" id="submit-name">
+        </form>
+    </div>
 </body>
 
-</html>
+{% endblock %}
+
