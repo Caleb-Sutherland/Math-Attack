@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>Enter your name</h1>
-<form>
-    <input type="text" name="name" id="name">
+<form id="problem">
+    <h1><i>Find the solution</i></h1>
+    <p>
+        {{ question }} = 
+        <input type="text" name="answer" id="answer">
+    </p>
 </form>
 
 {% endblock %}
