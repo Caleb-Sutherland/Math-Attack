@@ -11,9 +11,9 @@ conn = sqlite3.connect('database.db')
 print("Opened database successfully")
 
 result = conn.execute("SELECT name from sqlite_master WHERE type='table' AND name='users'")
-if(len(result.fetchall()) != 1):
-	conn.execute('CREATE TABLE users (name TEXT, health INTEGER)')
-	print("Table created successfully")
+
+if(int(len(result.fetchall())) == 0):
+	conn.execute('CREATE TABLE users (id INTEGER, name TEXT, health INTEGER)')
 conn.close()
 
 @app.route("/")
@@ -22,7 +22,6 @@ def home():
 	return render_template("create_user.html")
 
   #return render_template("attack.html", question = "1 + 2")
-
 
 if __name__ == "__main__":
 	app.run(debug = True)

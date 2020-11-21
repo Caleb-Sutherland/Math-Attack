@@ -35,3 +35,44 @@ body {
     left:50%;
     transform: translateX(-50%) translateY(-50%);
 }
+
+#user-container {
+    display:block;
+    position:absolute;
+    text-align: center;
+    top:50%;
+    left:50%;
+    transform: translateX(-50%) translateY(-50%);
+    background-color: rgb(220, 245, 220);
+    padding-left: 100px;
+    padding-top: 100px;
+    padding-right: 100px;
+    padding-bottom: 100px;
+}
+
+#user-input {
+    border:none;
+    border-radius: 0;
+    border-bottom: 4px solid black;
+    background: transparent;
+    font-size: 32px;
+    font-family: Georgia, serif;
+}
+
+#user-input:focus {
+    outline:none;
+}
+
+#submit {
+    font-size: 32px;
+    font-family: Georgia, serif;
+    border:none;
+    background:transparent;
+    color:saddlebrown;
+    transition: color 0.25s;
+}
+
+#submit:hover {
+    cursor:pointer;
+    color:darkgoldenrod;
+}
