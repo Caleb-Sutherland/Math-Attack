@@ -6,13 +6,16 @@ app = Flask(__name__)
 #create database and user table within
 conn = sqlite3.connect('database.db')
 print("Opened database successfully")
-conn.execute('CREATE TABLE users (name TEXT, health INTEGER)')
-print("Table created successfully")
+
+result = conn.execute("SELECT name from sqlite_master WHERE type='table' AND name='users'")
+if(len(result.fetchall()) != 1):
+	conn.execute('CREATE TABLE users (name TEXT, health INTEGER)')
+	print("Table created successfully")
 conn.close()
 
 @app.route("/")
 def home():
-	return render_template("attack.html")
+	return render_template("create_user.html")
 
 if __name__ == "__main__":
 	app.run(debug = True)
