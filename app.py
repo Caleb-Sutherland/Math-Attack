@@ -35,16 +35,18 @@ def home():
 			session.pop('id')
 			return render_template("game_over.html", name=session['name'], health=session['health'])
 	if(request.method == "POST"):
-		cursor = get_db().cursor()
-		cursor.execute("INSERT INTO users ('name', 'health') VALUES ('"+ request.form['username'] + "','100')")
-		get_db().commit()
-		result = cursor.execute("SELECT last_insert_rowid()")
-		id = int(result.fetchall()[0][0])
-		cursor.close()
-		session['name'] = request.form['username']
-		session['id'] = id
-		session['health'] = 100
-		return redirect(url_for("opponents"))
+		if request.form['username'] != '':
+			cursor = get_db().cursor()
+			cursor.execute("INSERT INTO users ('name', 'health') VALUES ('"+ request.form['username'] + "','100')")
+			get_db().commit()
+			result = cursor.execute("SELECT last_insert_rowid()")
+			id = int(result.fetchall()[0][0])
+			cursor.close()
+			session['name'] = request.form['username']
+			session['id'] = id
+			session['health'] = 100
+			return redirect(url_for("opponents"))
+		return render_template("create_user.html", name="", health="")
 	else:
 		return render_template("create_user.html", name="", health="")
 	
