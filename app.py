@@ -46,11 +46,21 @@ def home():
 
   #return render_template("attack.html", question = "1 + 2")
     
-@app.route("/check/")
-def check():
-    result = get_db().execute("SELECT name FROM users")
-    value = str(result.fetchall())
-    return value
+@app.route("/opponents/", methods=["GET", "POST"])
+def opponents():
+    if request.method == 'POST':
+        session['enemy'] = request.form['enemy']
+        return render_template("attack.html", question = "q", enemy = session['enemy'])
+    cursor = get_db().cursor()
+    cursor.execute("SELECT * FROM users")
+    r = cursor.fetchall()
+    columns = [desc[0] for desc in cursor.description]
+    results = []
+    for row in r:
+        summary = dict(zip(columns, row))
+        results.append(summary)
+    cursor.close()
+    return render_template("opponents.html", enemies = results)
 
 if __name__ == "__main__":
 	app.run(debug = True)
