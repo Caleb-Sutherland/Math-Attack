@@ -1,6 +1,30 @@
 body {
+    margin:0px;
     background-color: beige;
     font-family: Georgia, serif;
+}
+
+#header {
+    background-color:#ebdebe;
+    height:80px;
+}
+
+#head-title {
+    position:absolute;
+    top:0px;
+    left:15px;
+}
+
+#head-health {
+    display:block;
+    position:absolute;
+    top:5px;
+    left:50%;
+    transform: translateX(-50%);
+}
+
+#container {
+    margin:10px;
 }
 
 #answer {
@@ -66,9 +90,12 @@ body {
 
 #opponents {
     padding:0px;
+    font-size:32px;
 }
 
 #opponents li {
+    margin-left:100px;
+    margin-right:100px;
     list-style-type:none;
     font-size:
 }
@@ -76,6 +103,12 @@ body {
 #opponents button {
     float:right;
     margin-right:30px;
+}
+
+hr {
+    border:solid black 1px;
+    margin-left:50px;
+    margin-right:50px;
 }
 
 .health {

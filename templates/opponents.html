@@ -1,16 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
+<h3 style="text-align: center">Select an opponent to attack.</h3>
 <ul id="opponents">
 {% for enemy in enemies %}
-{% if enemy.id != id %}
+
+    <li>{% if loop.index == 1 %}&#128081; {% endif %}{{enemy.name}} <span class="health">   &hearts;{{enemy.health}}</span>
+    {% if enemy.id != id %}
+        <button id="submit" onclick="
+            document.getElementById('enemy').value='{{enemy.id}}';
+            document.getElementById('enemy-name').value='{{enemy.name}}';
+            document.getElementById('enemy-health').value='{{enemy.health}}';
+            document.getElementById('choose-opponent').submit();
+            "><i>fight</i></button>
+    {% endif %}
+    </li>
     <hr>
-    <li><!--&#128081;-->{{enemy.name}} <span class="health">   &hearts;{{enemy.health}}</span> <button onclick="
-        document.getElementById('enemy').value='{{enemy.id}}';
-        document.getElementById('enemy-name').value='{{enemy.name}}';
-        document.getElementById('enemy-health').value='{{enemy.health}}';
-        document.getElementById('choose-opponent').submit();
-        ">Fight</button></li>
-{% endif %}
 {% endfor %}
 </ul>
 

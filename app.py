@@ -10,16 +10,16 @@ app.secret_key = "29g823fw"
 DATABASE = 'database.db'
 
 def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
-    return db
+	db = getattr(g, '_database', None)
+	if db is None:
+		db = g._database = sqlite3.connect(DATABASE)
+	return db
 
 @app.teardown_appcontext
 def close_connection(exception):
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
+	db = getattr(g, '_database', None)
+	if db is not None:
+		db.close()
 
 @app.route("/", methods=["POST", "GET"])
 def home():
@@ -27,10 +27,13 @@ def home():
 		cursor = get_db().cursor()
 		result = int(cursor.execute("SELECT COUNT(health) FROM users WHERE id = "+str(session['id'])).fetchall()[0][0])
 		if(result > 0):
+			session['health'] = int(cursor.execute("SELECT health FROM users WHERE id = "+str(session['id'])).fetchall()[0][0])
+			cursor.close()
 			return redirect(url_for("opponents"))
 		else:
+			cursor.close()
 			session.pop('id')
-			return render_template("game_over.html")
+			return render_template("game_over.html", name=session['name'], health=session['health'])
 
 	if(request.method == "POST"):
 		cursor = get_db().cursor()
@@ -41,64 +44,65 @@ def home():
 		cursor.close()
 		session['name'] = request.form['username']
 		session['id'] = id
+		session['health'] = 100
 		return redirect(url_for("opponents"))
 	else:
-		return render_template("create_user.html")
-    
+		return render_template("create_user.html", name=session['name'], health=session['health'])
+	
 @app.route("/opponents/", methods=["GET", "POST"])
 def opponents():
-    if 'id' in session:
-        if request.method == 'POST':
-            if 'answer' in request.form:
-                enemy_health = int(session['enemy-health'])
-                if floor(enemy_health/10) < 5:
-                    hit = 5
-                else:
-                    hit = floor(enemy_health/10)
-                if request.form['answer'] == str(session['answer']):
-                    cursor = get_db().cursor()
-                    cursor.execute("UPDATE users SET health = health + '" + str(hit) + "' WHERE id = '" + str(session['id']) + "'")
-                    cursor.execute("UPDATE users SET health = health - '" + str(hit) + "' WHERE id = '" + str(session['enemy']) + "'")
-                    cursor.execute("DELETE FROM users WHERE health <= 0")
-                    get_db().commit()
-                    cursor.close()
-                    return render_template("win.html", enemy_name = session['enemy-name'], hit = hit)
-                else:
-                    cursor = get_db().cursor()
-                    cursor.execute("UPDATE users SET health = health - '" + str(hit) + "' WHERE id = '" + str(session['id']) + "'")
-                    cursor.execute("DELETE FROM users WHERE health <= 0")
-                    get_db().commit()
-                    cursor.close()
-                    return render_template("loss.html", hit = hit)
-            session['enemy'] = request.form['enemy']
-            session['enemy-name'] = request.form['enemy-name']
-            session['enemy-health'] = request.form['enemy-health']
-            question, session['answer'] = questionGenerator()
-            return render_template("attack.html", question = question, enemy = session['enemy'], enemy_name = session['enemy-name'], enemy_health = int(session['enemy-health']))
-        cursor = get_db().cursor()
-        cursor.execute("SELECT * FROM users")
-        r = cursor.fetchall()
-        columns = [desc[0] for desc in cursor.description]
-        results = []
-        for row in r:
-            summary = dict(zip(columns, row))
-            results.append(summary)
-        cursor.close()
-        return render_template("opponents.html", enemies = results, id = session['id'])
-    else:
-        return redirect(url_for("home"))
+	if 'id' in session:
+		if request.method == 'POST':
+			if 'answer' in request.form:
+				enemy_health = int(session['enemy-health'])
+				if floor(enemy_health/10) < 5:
+					hit = 5
+				else:
+					hit = floor(enemy_health/10)
+				if request.form['answer'] == str(session['answer']):
+					cursor = get_db().cursor()
+					cursor.execute("UPDATE users SET health = health + '" + str(hit) + "' WHERE id = '" + str(session['id']) + "'")
+					cursor.execute("UPDATE users SET health = health - '" + str(hit) + "' WHERE id = '" + str(session['enemy']) + "'")
+					cursor.execute("DELETE FROM users WHERE health <= 0")
+					get_db().commit()
+					cursor.close()
+					return render_template("win.html", name=session['name'], health=session['health'], enemy_name = session['enemy-name'], hit = hit)
+				else:
+					cursor = get_db().cursor()
+					cursor.execute("UPDATE users SET health = health - '" + str(hit) + "' WHERE id = '" + str(session['id']) + "'")
+					cursor.execute("DELETE FROM users WHERE health <= 0")
+					get_db().commit()
+					cursor.close()
+					return render_template("loss.html", name=session['name'], health=session['health'], hit = hit)
+			session['enemy'] = request.form['enemy']
+			session['enemy-name'] = request.form['enemy-name']
+			session['enemy-health'] = request.form['enemy-health']
+			question, session['answer'] = questionGenerator()
+			return render_template("attack.html", name=session['name'], health=session['health'], question = question, enemy = session['enemy'], enemy_name = session['enemy-name'], enemy_health = int(session['enemy-health']))
+		cursor = get_db().cursor()
+		cursor.execute("SELECT * FROM users ORDER BY health DESC")
+		r = cursor.fetchall()
+		columns = [desc[0] for desc in cursor.description]
+		results = []
+		for row in r:
+			summary = dict(zip(columns, row))
+			results.append(summary)
+		cursor.close()
+		return render_template("opponents.html", name=session['name'], health=session['health'], enemies = results, id = session['id'])
+	else:
+		return redirect(url_for("home"))
 
 @app.route("/admin/", methods=["GET", "POST"])
 def admin():
-    if 'name' in request.form:
-        cursor = get_db().cursor()
-        cursor.execute("INSERT INTO users ('name', 'health') VALUES ('"+ request.form['name'] + "','100')")
-        get_db().commit()
-        cursor.close()
-        return "<form method='POST'><input name='name'></form>"
-    else:
-        return "<form method='POST'><input name='name'></form>"
-    
+	if 'name' in request.form:
+		cursor = get_db().cursor()
+		cursor.execute("INSERT INTO users ('name', 'health') VALUES ('"+ request.form['name'] + "','100')")
+		get_db().commit()
+		cursor.close()
+		return "<form method='POST'><input name='name'></form>"
+	else:
+		return "<form method='POST'><input name='name'></form>"
+	
 
 
 	#0-50 50-70 70-90 90-110 110-130 130-150 150-+
