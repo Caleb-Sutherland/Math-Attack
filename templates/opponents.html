@@ -4,7 +4,7 @@
 <ul id="opponents">
 {% for enemy in enemies %}
 
-    <li>{% if loop.index == 1 %}&#128081; {% endif %}{{enemy.name}} <span class="health">   &hearts;{{enemy.health}}</span>
+    <li>{% if enemy.health == highest %}&#128081; {% endif %}{{enemy.name}} <span class="health">   &hearts;{{enemy.health}}</span>
     {% if enemy.id != id %}
         <button id="submit" onclick="
             document.getElementById('enemy').value='{{enemy.id}}';

@@ -87,7 +87,8 @@ def opponents():
 			summary = dict(zip(columns, row))
 			results.append(summary)
 		cursor.close()
-		return render_template("opponents.html", name=session['name'], health=session['health'], enemies = results, id = session['id'])
+		highest = results[0]['health']
+		return render_template("opponents.html", name=session['name'], health=session['health'], enemies = results, id = session['id'], highest=highest)
 	else:
 		return redirect(url_for("home"))
 
