@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<form id="problem" method="get">
+    <p>
+        You have lost <i>{{hit}}</i> health.
+        <br><button type="submit" id="submit" href="/opponents/"><i>okay</i></button>
+    </p>
+</form>
+{% endblock %}
