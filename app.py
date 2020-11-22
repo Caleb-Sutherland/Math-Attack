@@ -31,7 +31,6 @@ def home():
 		else:
 			session.pop('id')
 			return render_template("game_over.html")
-
 	if(request.method == "POST"):
 		cursor = get_db().cursor()
 		cursor.execute("INSERT INTO users ('name', 'health') VALUES ('"+ request.form['username'] + "','100')")
