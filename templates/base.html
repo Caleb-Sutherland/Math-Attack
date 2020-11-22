@@ -7,7 +7,7 @@
     <body>
         <div id="header">
             <h1 id="head-title"><i>Math Attack</i></h1>
-            <h2 id="head-health">{{name}}<span style="padding-left: 20px"/>&hearts;{{health}}</h2>
+            <h2 id="head-health">{{name}}<span style="padding-left: 20px"/>{% if health != "" %}&hearts;{% endif %}{{health}}</h2>
         </div>
         <div id="container">
             {% block content %}{% endblock %}

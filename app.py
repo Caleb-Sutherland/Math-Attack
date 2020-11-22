@@ -46,7 +46,7 @@ def home():
 		session['health'] = 100
 		return redirect(url_for("opponents"))
 	else:
-		return render_template("create_user.html", name=session['name'], health=session['health'])
+		return render_template("create_user.html", name="", health="")
 	
 @app.route("/opponents/", methods=["GET", "POST"])
 def opponents():
