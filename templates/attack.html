@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
+<h3 style="text-align: center">You are fighting <i>{{enemy_name}}</i>, who has <i>{{enemy_health}}</i> health.</h3>
+<p style="text-align: center">Solve the following question and you will take {% if (enemy_health/10)|round(1, 'floor') < 5 %}5{% else %}{{ (enemy_health/10)|round(1, 'floor')|int|string }}{% endif %} health.</p>
 
-<form id="problem">
+<form id="problem" method="post">
     <h1><i>Find the solution</i></h1>
     <p>
         {{ question }} = 

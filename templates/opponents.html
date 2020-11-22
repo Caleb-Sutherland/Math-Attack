@@ -2,12 +2,21 @@
 {% block content %}
 <ul id="opponents">
 {% for enemy in enemies %}
+{% if enemy.id != id %}
     <hr>
-    <li><!--&#128081;-->{{enemy.name}} <span class="health">&hearts;{{enemy.health}}</span> <button onclick="document.getElementById('enemy').value='{{enemy.id}}'; document.getElementById('choose-opponent').submit();">Fight</button></li>
+    <li><!--&#128081;-->{{enemy.name}} <span class="health">&hearts;{{enemy.health}}</span> <button onclick="
+        document.getElementById('enemy').value='{{enemy.id}}';
+        document.getElementById('enemy-name').value='{{enemy.name}}';
+        document.getElementById('enemy-health').value='{{enemy.health}}';
+        document.getElementById('choose-opponent').submit();
+        ">Fight</button></li>
+{% endif %}
 {% endfor %}
 </ul>
 
 <form id="choose-opponent" method="post" hidden>
     <input type="text" name="enemy" id="enemy">
+    <input type="text" name="enemy-name" id="enemy-name">
+    <input type="text" name="enemy-health" id="enemy-health">
 </form>
 {% endblock %}
