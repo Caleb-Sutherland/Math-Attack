@@ -1,3 +1,4 @@
+from os import close
 from flask import Flask, redirect, url_for, render_template, request, session, g
 from math import floor
 import sqlite3
@@ -13,6 +14,10 @@ def get_db():
 	db = getattr(g, '_database', None)
 	if db is None:
 		db = g._database = sqlite3.connect(DATABASE)
+		cursor = db.cursor()
+		cursor.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER NOT NULL, name TEXT NOT NULL, health INTEGER NOT NULL, PRIMARY KEY(id))")
+		cursor.close()
+		print("success")
 	return db
 
 @app.teardown_appcontext
