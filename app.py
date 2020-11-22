@@ -5,6 +5,7 @@ from random import random
 
 
 app = Flask(__name__)
+app.secret_key = "29g823fw"
 
 DATABASE = 'database.db'
 
@@ -20,10 +21,28 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
-@app.route("/")
+@app.route("/", methods=["POST", "GET"])
 def home():
-
-	return render_template("create_user.html")
+	if(session['id']):
+		cursor = get_db().cursor()
+		result = cursor.execute("SELECT health FROM users WHERE id = "+session['id']).fetchall()[0][0]
+		if(result > 0):
+			return redirect(url_for("opponent"))
+		else:
+			render_template("create_user.html")
+	if(request.method == "POST"):
+		cursor = get_db().cursor()
+		cursor.execute("INSERT INTO users ('name', 'health') VALUES ('"+ request.form['username'] + "','100')")
+		get_db().commit()
+		result = cursor.execute("SELECT last_insert_rowid()")
+		id = int(result.fetchall()[0][0])
+		print(id)
+		session['name'] = request.form['username']
+		session['id'] = id
+		return render_template("opponents.html")
+	else:
+		return render_template("create_user.html")
+	
 
   #return render_template("attack.html", question = "1 + 2")
     
