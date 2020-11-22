@@ -95,3 +95,7 @@ body {
     cursor:pointer;
     color:darkgoldenrod;
 }
+
+a {
+    text-decoration: none;
+}
