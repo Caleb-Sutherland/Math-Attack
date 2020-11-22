@@ -1,7 +1,7 @@
 from flask import Flask, redirect, url_for, render_template, request, session, g
 from math import floor
 import sqlite3
-from random import random
+import random
 
 
 app = Flask(__name__)
@@ -24,9 +24,8 @@ def close_connection(exception):
 @app.route("/", methods=["POST", "GET"])
 def home():
 	if 'id' in session:
-
 		cursor = get_db().cursor()
-		result = cursor.execute("SELECT health FROM users WHERE id = "+str(session['id'])).fetchall()[0][0]
+		result = int(cursor.execute("SELECT COUNT(health) FROM users WHERE id = "+str(session['id'])).fetchall()[0][0])
 		if(result > 0):
 			return redirect(url_for("opponents"))
 		else:
@@ -39,7 +38,7 @@ def home():
 		get_db().commit()
 		result = cursor.execute("SELECT last_insert_rowid()")
 		id = int(result.fetchall()[0][0])
-		print(id)
+		cursor.close()
 		session['name'] = request.form['username']
 		session['id'] = id
 		return redirect(url_for("opponents"))
@@ -56,23 +55,26 @@ def opponents():
                     hit = 5
                 else:
                     hit = floor(enemy_health/10)
-                if request.form['answer'] == '10': #session['answer']:
+                if request.form['answer'] == str(session['answer']):
                     cursor = get_db().cursor()
                     cursor.execute("UPDATE users SET health = health + '" + str(hit) + "' WHERE id = '" + str(session['id']) + "'")
                     cursor.execute("UPDATE users SET health = health - '" + str(hit) + "' WHERE id = '" + str(session['enemy']) + "'")
+                    cursor.execute("DELETE FROM users WHERE health <= 0")
                     get_db().commit()
                     cursor.close()
                     return render_template("win.html", enemy_name = session['enemy-name'], hit = hit)
                 else:
                     cursor = get_db().cursor()
                     cursor.execute("UPDATE users SET health = health - '" + str(hit) + "' WHERE id = '" + str(session['id']) + "'")
+                    cursor.execute("DELETE FROM users WHERE health <= 0")
                     get_db().commit()
                     cursor.close()
                     return render_template("loss.html", hit = hit)
             session['enemy'] = request.form['enemy']
             session['enemy-name'] = request.form['enemy-name']
             session['enemy-health'] = request.form['enemy-health']
-            return render_template("attack.html", question = "q", enemy = session['enemy'], enemy_name = session['enemy-name'], enemy_health = int(session['enemy-health']))
+            question, session['answer'] = questionGenerator()
+            return render_template("attack.html", question = question, enemy = session['enemy'], enemy_name = session['enemy-name'], enemy_health = int(session['enemy-health']))
         cursor = get_db().cursor()
         cursor.execute("SELECT * FROM users")
         r = cursor.fetchall()
@@ -86,8 +88,18 @@ def opponents():
     else:
         return redirect(url_for("home"))
 
-if __name__ == "__main__":
-	app.run(debug = True)
+@app.route("/admin/", methods=["GET", "POST"])
+def admin():
+    if 'name' in request.form:
+        cursor = get_db().cursor()
+        cursor.execute("INSERT INTO users ('name', 'health') VALUES ('"+ request.form['name'] + "','100')")
+        get_db().commit()
+        cursor.close()
+        return "<form method='POST'><input name='name'></form>"
+    else:
+        return "<form method='POST'><input name='name'></form>"
+    
+
 
 	#0-50 50-70 70-90 90-110 110-130 130-150 150-+
 	#under 50 is 1 digit numbers just one operation
@@ -141,8 +153,8 @@ def questionGenerator():
 			answer = (d1*d2) - d3
 
 	elif(result >= 70 and result < 90):
-		d1 = random.randint(10, 99)
-		d2 = random.randint(10, 99)
+		d1 = random.randint(5, 12)
+		d2 = random.randint(5, 12)
 		d3 = random.randint(1, 9)
 		selector = random.randint(1, 4)
 		if(selector == 1):
@@ -153,8 +165,8 @@ def questionGenerator():
 			answer = d1 - (d2 * d3)
 		elif(selector == 3):
 			while(d1%d2 != 0):
-				d1 = random.randint(10, 99)
-				d2 = random.randint(10, 99)
+				d1 = random.randint(5, 12)
+				d2 = random.randint(5, 12)
 			question = str(d1) + " / " + str(d2) + " + " + str(d3) + " = "
 			answer = (d1/d2) + d3
 		elif(selector == 4):
@@ -162,8 +174,8 @@ def questionGenerator():
 			answer = (d1*d2) - d3
 
 	elif(result >= 90 and result < 110):
-		d1 = random.randint(10, 99)
-		d2 = random.randint(10, 99)
+		d1 = random.randint(5, 19)
+		d2 = random.randint(5, 19)
 		d3 = random.randint(1, 9)
 		selector = random.randint(1, 4)
 		if(selector == 1):
@@ -174,18 +186,18 @@ def questionGenerator():
 			answer = (d1**2) - (d2 * d3)
 		elif(selector == 3):
 			while(d1%d2 != 0):
-				d1 = random.randint(10, 99)
-				d2 = random.randint(10, 99)
-			question = str(d1) - " / " + str(d2) + " - " + str(d3) + "^2 = "
+				d1 = random.randint(5, 19)
+				d2 = random.randint(5, 19)
+			question = str(d1) + " / " + str(d2) + " - " + str(d3) + "^2 = "
 			answer = (d1/d2) - (d3**2)
 		elif(selector == 4):
 			question = str(d1) + " x " + str(d2) + " + " + str(d3) + "^2 = "
 			answer = (d1*d2) + (d3**2)
 
 	elif(result >= 110 and result < 130):
-		d1 = random.randint(10, 99)
-		d2 = random.randint(10, 99)
-		d3 = random.randint(10, 99)
+		d1 = random.randint(5, 19)
+		d2 = random.randint(5, 19)
+		d3 = random.randint(5, 19)
 		selector = random.randint(1, 4)
 		if(selector == 1):
 			question = str(d1) + " + " + str(d2) + " - " + str(d3) + " = "
@@ -195,18 +207,18 @@ def questionGenerator():
 			answer = (d1 * d2) - d3
 		elif(selector == 3):
 			while(d1%d2 != 0):
-				d1 = random.randint(10, 99)
-				d2 = random.randint(10, 99)
-			question = str(d1) - " / " + str(d2) + " - " + str(d3) + " = "
+				d1 = random.randint(5, 19)
+				d2 = random.randint(5, 19)
+			question = str(d1) + " / " + str(d2) + " - " + str(d3) + " = "
 			answer = (d1/d2) - (d3)
 		elif(selector == 4):
 			question = str(d1) + " x " + str(d2) + " + " + str(d3) + " = "
 			answer = (d1*d2) + (d3)
 
 	elif(result >= 130 and result < 150):
-		d1 = random.randint(100, 999)
-		d2 = random.randint(100, 999)
-		d3 = random.randint(100, 999)
+		d1 = random.randint(11, 29)
+		d2 = random.randint(11, 29)
+		d3 = random.randint(11, 29)
 		selector = random.randint(1, 4)
 		if(selector == 1):
 			question = str(d1) + " + " + str(d2) + " - " + str(d3) + " = "
@@ -216,37 +228,41 @@ def questionGenerator():
 			answer = (d1 * d2) - d3
 		elif(selector == 3):
 			while(d1%d2 != 0):
-				d1 = random.randint(100, 999)
-				d2 = random.randint(100, 999)
-			question = str(d1) - " / " + str(d2) + " - " + str(d3) + " = "
+				d1 = random.randint(11, 29)
+				d2 = random.randint(11, 29)
+			question = str(d1) + " / " + str(d2) + " - " + str(d3) + " = "
 			answer = (d1/d2) - (d3)
 		elif(selector == 4):
 			question = str(d1) + " x " + str(d2) + " + " + str(d3) + " = "
 			answer = (d1*d2) + (d3)
 
 	else:
-		d1 = random.randint(100, 999)
-		d2 = random.randint(100, 999)
-		d3 = random.randint(100, 999)
-		d4 = random.randint(100, 999)
+		d1 = random.randint(11, 39)
+		d2 = random.randint(11, 39)
+		d3 = random.randint(11, 39)
+		d4 = random.randint(11, 39)
 		selector = random.randint(1, 4)
 		if(selector == 1):
 			question = str(d1) + " + " + str(d2) + " - " + str(d3) + " x " + str(d4) + " = "
 			answer = d1 + d2 - (d3*d4)
 		elif(selector == 2):
 			while(d3%d4 != 0):
-				d3 = random.randint(100, 999)
-				d4 = random.randint(100, 999)
+				d3 = random.randint(11, 39)
+				d4 = random.randint(11, 39)
 			question = str(d1) + " x " + str(d2) + " - " + str(d3) + " / " + str(d4) + " = "
 			answer = (d1 * d2) - (d3/d4)
 		elif(selector == 3):
 			while(d1%d2 != 0):
-				d1 = random.randint(100, 999)
-				d2 = random.randint(100, 999)
-			question = str(d1) - " / " + str(d2) + " - " + str(d3) + " x " + str(d4) + " = "
+				d1 = random.randint(11, 39)
+				d2 = random.randint(11, 39)
+			question = str(d1) + " / " + str(d2) + " - " + str(d3) + " x " + str(d4) + " = "
 			answer = (d1/d2) - (d3*d4)
 		elif(selector == 4):
 			question = str(d1) + " x " + str(d2) + " + " + str(d3) + " x " + str(d4) + " = "
 			answer = (d1*d2) + (d3*d4)
 
-	return question, answer
+	return question, int(answer)
+
+
+if __name__ == "__main__":
+	app.run(debug = True)

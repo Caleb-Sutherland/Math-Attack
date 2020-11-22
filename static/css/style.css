@@ -1,5 +1,6 @@
 body {
     background-color: beige;
+    font-family: Georgia, serif;
 }
 
 #answer {
@@ -63,6 +64,24 @@ body {
     outline:none;
 }
 
+#opponents {
+    padding:0px;
+}
+
+#opponents li {
+    list-style-type:none;
+    font-size:
+}
+
+#opponents button {
+    float:right;
+    margin-right:30px;
+}
+
+.health {
+    float:right;
+}
+
 #submit {
     font-size: 32px;
     font-family: Georgia, serif;
@@ -75,4 +94,8 @@ body {
 #submit:hover {
     cursor:pointer;
     color:darkgoldenrod;
+}
+
+a {
+    text-decoration: none;
 }
