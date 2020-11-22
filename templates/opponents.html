@@ -3,7 +3,7 @@
 <ul id="opponents">
 {% for enemy in enemies %}
     <hr>
-    <li>{{enemy.name}} <span class="health">&hearts;{{enemy.health}}</span> <button onclick="document.getElementById('enemy').value='{{enemy.id}}'; document.getElementById('choose-opponent').submit();">Fight</button></li>
+    <li><!--&#128081;-->{{enemy.name}} <span class="health">&hearts;{{enemy.health}}</span> <button onclick="document.getElementById('enemy').value='{{enemy.id}}'; document.getElementById('choose-opponent').submit();">Fight</button></li>
 {% endfor %}
 </ul>
 
